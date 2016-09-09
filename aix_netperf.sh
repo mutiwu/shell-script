@@ -51,7 +51,8 @@ do
     	    $netperfpath -H $host_ip -l $timest -C -c -t $proto -- -m $psize>>$tdir/$tfile$breakc$i
             if [ "$proto" = "UDP_STREAM" ]
             then
-                awk 'NR==7{print $6}' $tdir/$tfile$breakc$i >>$tdir/data_$tfile
+                awk 'NR==6{print $6}' $tdir/$tfile$breakc$i >>$tdir/datau_$tfile
+                awk 'NR==7{print $4}' $tdir/$tfile$breakc$i >>$tdir/data_$tfile
             else
                 awk 'NR==7{print $5}' $tdir/$tfile$breakc$i >>$tdir/data_$tfile
             fi
@@ -60,6 +61,12 @@ do
         dataall=`awk '{a=a+$1}END{print a}' $tdir/data_$tfile` 
         res=`echo "scale=2;$dataall/5"|bc`
         echo -e "$proto\t\t$psize\t\t$res" >>$rt
+        if [ "$proto" = "UDP_STREAM" ]
+        then
+            datau=`awk '{a=a+$1}END{print a}' $tdir/datau_$tfile`
+            resu=`echo "scale=2;$datau/5"|bc`
+            echo -e "$proto\t\t$psize\t\t$resu\t\t--this is tx udp per" >>$rt
+        fi
     done
 done
 for proto in $protos2
