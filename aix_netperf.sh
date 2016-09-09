@@ -49,7 +49,12 @@ do
         for i in $(seq 5)
         do
     	    $netperfpath -H $host_ip -l $timest -C -c -t $proto -- -m $psize>>$tdir/$tfile$breakc$i
-            awk 'NR==7{print $5}' $tdir/$tfile$breakc$i >>$tdir/data_$tfile
+            if [ "$proto" = "UDP_STREAM" ]
+            then
+                awk 'NR==7{print $6}' $tdir/$tfile$breakc$i >>$tdir/data_$tfile
+            else
+                awk 'NR==7{print $5}' $tdir/$tfile$breakc$i >>$tdir/data_$tfile
+            fi
 	    sleep 1
         done
         dataall=`awk '{a=a+$1}END{print a}' $tdir/data_$tfile` 
