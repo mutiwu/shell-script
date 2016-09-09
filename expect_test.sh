@@ -1,9 +1,10 @@
 #!/bin/bash
 expect <<!
-spawn ssh root@172.16.136.28
+spawn ssh root@172.16.236.152
 expect "*password*"
 send "teamsun\r"
 expect "#"
-send "ls\r"
+send "/usr/local/bin/netperf -H 172.16.236.153 -l 10 >>sdf 2>&1\r" 
+
 expect eof
 !
