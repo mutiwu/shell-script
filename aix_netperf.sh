@@ -1,6 +1,6 @@
 #!/bin/sh
 host_ip=$1
-#times=30
+#timest=30
 timest=1
 ndate=$(echo `date`|sed 's/[[:space:]]/\_/g')
 tdir=/tmp/per_net$ndate
@@ -41,7 +41,12 @@ for proto in $protos1
 do
     echo $bline >>$rt
     echo -e "The final performance of $proto result is(Mbps):\n " >>$rt
-    echo -e "Protocal\t\tSize\t\tThroughput\n" >>$rt
+    if [ "$proto" = "UDP_STREAM" ]
+    then
+        echo -e "Protocal\t\tSize\t\tTXThroughput\t\tRemoteRXThroughput\n" >>$rt
+    else
+        echo -e "Protocal\t\tSize\t\tThroughput\n" >>$rt
+    fi
     for psize in $psize1
     do
         tfile=rs$proto$psize
@@ -60,12 +65,13 @@ do
         done
         dataall=`awk '{a=a+$1}END{print a}' $tdir/data_$tfile` 
         res=`echo "scale=2;$dataall/5"|bc`
-        echo -e "$proto\t\t$psize\t\t$res" >>$rt
         if [ "$proto" = "UDP_STREAM" ]
         then
             datau=`awk '{a=a+$1}END{print a}' $tdir/datau_$tfile`
             resu=`echo "scale=2;$datau/5"|bc`
-            echo -e "$proto\t\t$psize\t\t$resu\t\t--this is tx udp per" >>$rt
+            echo -e "$proto\t\t$psize\t\t$resu\t\t$res" >>$rt
+        else
+            echo -e "$proto\t\t$psize\t\t$res" >>$rt
         fi
     done
 done
